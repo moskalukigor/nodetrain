@@ -1,0 +1,19 @@
+{
+  "name": "uz",
+  "version": "1.0.0",
+  "description": "",
+  "main": "uz.js",
+  "scripts": {
+    "start": "node uz.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cron": "^1.7.1",
+    "express": "^4.17.1",
+    "uz-booking-client": "^1.0.7",
+    "winston": "^3.2.1",
+    "winston-telegram": "^2.0.1"
+  }
+}
