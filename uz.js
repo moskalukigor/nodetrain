@@ -1,6 +1,9 @@
 const exec = require("child_process").exec;
 const logger = require("winston");
 const TelegramLogger = require("winston-telegram");
+var request = require('request');
+
+
 
 logger.add(
   new TelegramLogger({
@@ -12,15 +15,38 @@ logger.add(
 function run(date, FROM, TO) {
   console.log('Start ' + getName(FROM) + ' - ' + getName(TO) + ` (${date})`);
 
-  var command = `curl 'https://booking.uz.gov.ua/ru/train_search/' -H 'Cookie: _gv_lang=en; _ga=GA1.3.303985031.1559218660; HTTPSERVERID=server4; _gv_sessid=tfje2lg09t4dh5ara16sqr3255; _gid=GA1.3.1073728056.1560788208' -H 'Origin: https://booking.uz.gov.ua' -H 'Accept-Encoding: gzip, deflate, br' -H 'cache-version: 755' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36' -H 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8' -H 'Accept-Language: uk,en-US;q=0.9,en;q=0.8,ru-RU;q=0.7,ru;q=0.6' -H 'Accept: */*' -H 'Referer: https://booking.uz.gov.ua/en/?from=${FROM}&to=${TO}&date=${date}&time=00%3A00&url=train-list' -H 'X-Requested-With: XMLHttpRequest' -H 'Connection: keep-alive' --data 'from=${FROM}&to=${TO}&date=${date}&time=00%3A00' --compressed`;
+  //var command = `curl 'https://booking.uz.gov.ua/ru/train_search/' -H 'Cookie: _gv_lang=en; _ga=GA1.3.303985031.1559218660; HTTPSERVERID=server4; _gv_sessid=tfje2lg09t4dh5ara16sqr3255; _gid=GA1.3.1073728056.1560788208' -H 'Origin: https://booking.uz.gov.ua' -H 'Accept-Encoding: gzip, deflate, br' -H 'cache-version: 755' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36' -H 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8' -H 'Accept-Language: uk,en-US;q=0.9,en;q=0.8,ru-RU;q=0.7,ru;q=0.6' -H 'Accept: */*' -H 'Referer: https://booking.uz.gov.ua/en/?from=${FROM}&to=${TO}&date=${date}&time=00%3A00&url=train-list' -H 'X-Requested-With: XMLHttpRequest' -H 'Connection: keep-alive' --data 'from=${FROM}&to=${TO}&date=${date}&time=00%3A00' --compressed`;
 
-  exec(command, function(error, stdout, stderr) {
-    if (error !== null) {
-      console.log("exec error: " + error);
-    }
+  var headers = {
+    'Origin': 'https://booking.uz.gov.ua',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'cache-version': '755',
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36',
+    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    'Accept-Language': 'uk,en-US;q=0.9,en;q=0.8,ru-RU;q=0.7,ru;q=0.6',
+    'Accept': '*/*',
+    'Referer': `https://booking.uz.gov.ua/en/?from=${FROM}&to=${TO}&date=${date}&time=00%3A00&url=train-list`,
+    'X-Requested-With': 'XMLHttpRequest',
+    'Connection': 'keep-alive',
+    'Cookie': '_gv_lang=en; _ga=GA1.3.303985031.1559218660; HTTPSERVERID=server4; _gv_sessid=tfje2lg09t4dh5ara16sqr3255; _gid=GA1.3.1073728056.1560788208'
+};
 
+var dataString = `from=${FROM}&to=${TO}&date=${date}&time=00%3A00`;
 
-    const data = JSON.parse(stdout);
+var options = {
+    url: 'https://booking.uz.gov.ua/ru/train_search/',
+    method: 'POST',
+    headers: headers,
+    body: dataString
+};
+
+  request(options, function(error, response, data){
+  if (error) {
+    return logger.log("error", JSON.stringify(data));;
+  }
+
+    console.log();
+    data = JSON.parse(data);
 
     if (data.captcha) { 
       return logger.log("captcha", JSON.stringify(data));
