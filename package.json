@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "cron": "^1.7.1",
+    "curl": "^0.1.4",
     "express": "^4.17.1",
     "uz-booking-client": "^1.0.7",
     "winston": "^3.2.1",
