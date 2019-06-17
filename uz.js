@@ -42,6 +42,7 @@ var options = {
 
   request(options, function(error, response, data){
   if (error) {
+    console.log("ERROR1");
     return logger.log("error", JSON.stringify(data));;
   }
 
@@ -49,9 +50,11 @@ var options = {
     data = JSON.parse(data);
 
     if (data.captcha) { 
+      console.log("Captcha");
       return logger.log("captcha", JSON.stringify(data));
     }
     if (data.error) {
+      console.log("ERROR2");
       return logger.log("error", JSON.stringify(data));
     }
     
